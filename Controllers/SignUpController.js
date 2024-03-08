@@ -52,7 +52,7 @@ const InsertVerifyUser = async (name,email,password) => {
                 
             })
 
-            const activationLink = `http://localhost:4050/signup/${token}`;
+            const activationLink = `https://notesbackend-9rnl.onrender.com/signup/${token}`;
 
             const content =
             `<!DOCTYPE html>
@@ -165,7 +165,7 @@ const InsertSignUpUser = async (token) => {
 
     await VerifyUser.deleteOne({token:token});
 
-    console.log("savedUser",savedUser);
+    // console.log("savedUser",savedUser);
 
     const content =
      `<!DOCTYPE html>

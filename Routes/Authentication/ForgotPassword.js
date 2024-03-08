@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
        })
     } else {
         
-        const activationLink = `http://localhost:5173/FPUpdate/${token}`;
+        const activationLink = `https://notes-bba73.web.app/FPUpdate/${token}`;
 
         const content = 
         `<!DOCTYPE html>
