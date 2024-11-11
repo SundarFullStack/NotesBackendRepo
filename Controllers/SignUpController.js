@@ -1,61 +1,51 @@
 const User = require("../Models/Authentication/User");
-const VerifyUser = require("../Models/Authentication/VerifyUser")
-const {sendMail} = require("./sendmail")
+const VerifyUser = require("../Models/Authentication/VerifyUser");
+const { sendMail } = require("./sendmail");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-
 // Controller for validating User Is He is already exist or not?
 
-const CheckUser = async(email) => {
-
-    try {
-        const userExist = await User.findOne({ email: email });
+const CheckUser = async (email) => {
+  try {
+    const userExist = await User.findOne({ email: email });
 
     if (userExist) {
-        return true;
-
-    }else {
-        return false
+      return true;
+    } else {
+      return false;
     }
-    } catch (error) {
-        console.log("Error Occurred:" ,error)
-   }
-    
-}
-
+  } catch (error) {
+    console.log("Error Occurred:", error);
+  }
+};
 
 // Controller for saving verifying User
 
-const InsertVerifyUser = async (name,email,password) => {
-    
-    try {
-        const userExist = await User.findOne({email:email});
+const InsertVerifyUser = async (name, email, password) => {
+  try {
+    const userExist = await User.findOne({ email: email });
 
     // console.log("userExist", userExist);
-    
+
     if (!userExist) {
-        
-        const salt = await bcrypt.genSalt(10);
+      const salt = await bcrypt.genSalt(10);
 
-        const hashedPassword = await bcrypt.hash(password, salt);
+      const hashedPassword = await bcrypt.hash(password, salt);
 
-        const token = await TokenGenerator(email);
+      const token = await TokenGenerator(email);
 
-        if (token) {
-            
-            const newVerifyUser = new VerifyUser({
-                name: name,
-                email: email,
-                password: hashedPassword,
-                token:token
-                
-            })
+      if (token) {
+        const newVerifyUser = new VerifyUser({
+          name: name,
+          email: email,
+          password: hashedPassword,
+          token: token,
+        });
 
-            const activationLink = `https://notesbackend-9rnl.onrender.com/signup/${token}`;
+        const activationLink = `https://notesbackend-9rnl.onrender.com/signup/${token}`;
 
-            const content =
-            `<!DOCTYPE html>
+        const content = `<!DOCTYPE html>
             <html>
               <head> </head>
               <body>
@@ -80,7 +70,7 @@ const InsertVerifyUser = async (name,email,password) => {
                       "
                       class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
                     >
-                      <h2 style="color: #1a73e8">Notes Web Application</h2>
+                      <h2 style="color: #1a73e8">Blogs Web Application</h2>
                     </div>
             
                     <div
@@ -104,71 +94,57 @@ const InsertVerifyUser = async (name,email,password) => {
                 </div>
               </body>
             </html>
-            `
+            `;
 
-            const savedVerifyUser = await newVerifyUser.save();
-             
-            sendMail(email, "VerifyUser", content)
-            
-            return savedVerifyUser;
-        }
+        const savedVerifyUser = await newVerifyUser.save();
 
+        sendMail(email, "VerifyUser", content);
 
-
+        return savedVerifyUser;
+      }
     }
-    }
-    catch (error) {
-        console.log("Error Occurred:", error);
-    }
-
-
-}
+  } catch (error) {
+    console.log("Error Occurred:", error);
+  }
+};
 
 // Token Generator using JSON
 
 const TokenGenerator = async (email) => {
-    try {
-        const token = await jwt.sign(email, process.env.Signup_Secretkey);
-    
+  try {
+    const token = await jwt.sign(email, process.env.Signup_Secretkey);
+
     if (token) {
-        return token;
-    } 
-    } catch (error) {
-        console.log("Erro Occured:", error)
+      return token;
+    }
+  } catch (error) {
+    console.log("Erro Occured:", error);
   }
-    
-} 
-
-
+};
 
 // Controller for saving verified user in "user" collection and delete him/her in verified user collection
 
-
 const InsertSignUpUser = async (token) => {
-  
-
   try {
     const userExist = await VerifyUser.findOne({ token: token });
 
-  console.log("userExist",userExist);
+    console.log("userExist", userExist);
 
-  if (userExist) {
-    
-    const saveUser = new User({
-      name: userExist.name,
-      email: userExist.email,
-      password: userExist.password,
-      token:userExist.token
-    });
+    if (userExist) {
+      const saveUser = new User({
+        name: userExist.name,
+        email: userExist.email,
+        password: userExist.password,
+        token: userExist.token,
+      });
 
-    const savedUser = await saveUser.save();
+      const savedUser = await saveUser.save();
 
-    await VerifyUser.deleteOne({token:token});
+      await VerifyUser.deleteOne({ token: token });
 
-    // console.log("savedUser",savedUser);
+      // console.log("savedUser",savedUser);
 
-    const content =
-     `<!DOCTYPE html>
+      const content = `<!DOCTYPE html>
     <html>
       <head> </head>
       <body>
@@ -193,7 +169,7 @@ const InsertSignUpUser = async (token) => {
               "
               class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
             >
-              <h2 style="color: #1a73e8">Farmer Super Market</h2>
+              <h2 style="color: #1a73e8">Blog Web Application</h2>
             </div>
     
             <div
@@ -217,15 +193,14 @@ const InsertSignUpUser = async (token) => {
         </div>
       </body>
     </html>
-    `
+    `;
 
-    sendMail(userExist.email, "User Registered", content);
+      sendMail(userExist.email, "User Registered", content);
 
-    return savedUser;
-
-  } else {
-    return 
-    `<!DOCTYPE html>
+      return savedUser;
+    } else {
+      return;
+      `<!DOCTYPE html>
             <html>
               <head> </head>
               <body>
@@ -250,7 +225,7 @@ const InsertSignUpUser = async (token) => {
                       "
                       class="col-lg-12 col-md-12 col-sm-12 col-xs-12"
                     >
-                      <h2 style="color: #1a73e8">Farmer Super Market</h2>
+                      <h2 style="color: #1a73e8">Blog Web Application</h2>
                     </div>
             
                     <div
@@ -273,13 +248,12 @@ const InsertSignUpUser = async (token) => {
                 </div>
               </body>
             </html>
-            `
-  }
-    
+            `;
+    }
   } catch (error) {
     console.log("Error Occurred:", error);
-      return 
-      `<!DOCTYPE html>
+    return;
+    `<!DOCTYPE html>
               <html>
                 <head> </head>
                 <body>
@@ -327,9 +301,13 @@ const InsertSignUpUser = async (token) => {
                   </div>
                 </body>
               </html>
-              `
-    
+              `;
   }
-}
+};
 
-module.exports = { CheckUser,InsertVerifyUser,InsertSignUpUser,TokenGenerator };
+module.exports = {
+  CheckUser,
+  InsertVerifyUser,
+  InsertSignUpUser,
+  TokenGenerator,
+};
