@@ -3,7 +3,7 @@ const NotesCollection = require("../../Models/Application/Blogs");
 
 // API End Point for create notes
 
-router.post("/createBlog", async (req, res) => {
+router.post("/createNote", async (req, res) => {
   try {
     const { id, notesData, notesTitle, image } = await req.body;
 
@@ -36,7 +36,7 @@ router.post("/createBlog", async (req, res) => {
 
 // API End Point for update notes
 
-router.put("/updateBlog", async (req, res) => {
+router.put("/updateNote", async (req, res) => {
   try {
     const { id, notesData, notesTitle } = await req.body;
 
@@ -75,7 +75,7 @@ router.put("/updateBlog", async (req, res) => {
 
 // API for get all the created notes
 
-router.get("/getBlogs/:id", async (req, res) => {
+router.get("/getNotes/:id", async (req, res) => {
   try {
     const { id } = req.params;
     // console.log("id", id);
@@ -104,7 +104,7 @@ router.get("/getBlogs/:id", async (req, res) => {
 
 // API for delete notes
 
-router.delete("/deleteBlog/:id", async (req, res) => {
+router.delete("/deleteNote/:id", async (req, res) => {
   try {
     const { id } = req.params;
     // console.log("id", id);
